@@ -4,13 +4,16 @@ import styled from 'styled-components';
 import Avatar from './components/Avatar';
 import BoxName from './components/BoxName';
 import Smiley from '../../public/Smiley';
+import Message from './components/Message';
+import Send from '../../public/Send';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  padding-top: 50px;
+  padding-top: 55px;
+  background-image: url('./wallpapers.jpg');
 `;
 
 const Topo = styled.div`
@@ -33,7 +36,9 @@ const Mensagens = styled.div`
 `;
 
 const Rodape = styled.div`
-  background-color: #075E54;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   color: white;
   padding: 10px;
   position: sticky;
@@ -42,6 +47,7 @@ const Rodape = styled.div`
 `;
 
 const InputMensagem = styled.input`
+  height: 45px;
   width: 100%;
   padding: 8px;
   border: none;
@@ -61,15 +67,37 @@ const InputFake = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  width: 100%;
+`
+
+const BoxSend = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #075E54;
+  border-radius: 999px;
+  width: 54px;
+  height: 45px;
+  padding-left: 4px;
+  margin-left: 10px;
 `
 
 export default function Chat() {
-  const [mensagens, setMensagens] = useState([]);
+  const [mensagens, setMensagens] = useState([{
+    user: 0,
+    msg:  'Olá, tudo bem?'
+  },{
+    user: 0,
+    msg:  'Qual, seu nome?'
+  }]);
   const [mensagemAtual, setMensagemAtual] = useState('');
 
   const enviarMensagem = () => {
     if (mensagemAtual.trim()) {
-      setMensagens([...mensagens, mensagemAtual]);
+      setMensagens([...mensagens, {
+        user: 1,
+        msg: mensagemAtual
+      }]);
       setMensagemAtual('');
     }
   };
@@ -84,8 +112,12 @@ export default function Chat() {
         <div>||</div>
       </Topo>
       <Mensagens>
-        {mensagens.map((msg, index) => (
-          <div key={index}>{msg}</div>
+        {mensagens.map((mensagen, index) => (
+          <Message 
+            key={index}
+            isUser={mensagen.user}
+            msg={mensagen.msg}
+          />
         ))}
       </Mensagens>
       <Rodape>
@@ -103,6 +135,14 @@ export default function Chat() {
           }}
         />
         </InputFake>
+        <BoxSend
+        onClick={(e) => {
+          enviarMensagem();
+        }}
+        >
+          <Send/>
+        </BoxSend>
+       
       </Rodape>
     </Container>
   );
