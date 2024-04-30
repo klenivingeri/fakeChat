@@ -7,24 +7,22 @@ const DivNav = styled.div`
 `
 
 const Name = styled.div`
-font-weight: normal;
-margin-top: 1px;
-margin-bottom: 4px;
+    font-weight: normal;
+    margin-top: 2px;
+    margin-bottom: 4px;
 `
 
 const Status = styled.div`
-font-weight: lighter;
-font-size: 0.85rem;
-
+    font-weight: lighter;
+    font-size: 1rem;
 `
 
-const BoxName = () => {
-
+const BoxName = ({isWrite}) => {
 return (
-<DivNav>
-    <Name> Erick Kleniving</Name>
-    <Status> online</Status>
-</DivNav>
+    <DivNav>
+        <Name>Erick Kleniving</Name>
+        <Status>{!isWrite ? 'Digitando...' : 'Online' }</Status>
+    </DivNav>
 )
 }
 
