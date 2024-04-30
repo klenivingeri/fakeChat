@@ -20,6 +20,7 @@ const Ballon = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: row;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   align-items: end;
   &::after {
     content: "";
@@ -44,9 +45,14 @@ const CheckIcon = styled.div`
   display: flex;
   margin-left: 5px;
   justify-content: center;
-  width: 30px;
+  align-items: end;
+  width: 60px;
 `;
 
+const Hours = styled.span`
+  font-size: 0.7rem;
+  color: #a9a6a7;
+`
 const Options = styled.a`
   display: flex;
   flex-direction: row;
@@ -73,12 +79,24 @@ const checked = (status) => {
   }
 };
 
+
+function getHoraAtual() {
+  const dataAtual = new Date();
+  const hora = dataAtual.getHours();
+  const minuto = dataAtual.getMinutes();
+
+  const horaFormatada = hora < 10 ? `0${hora}` : hora;
+  const minutoFormatado = minuto < 10 ? `0${minuto}` : minuto;
+
+  return `${horaFormatada}:${minutoFormatado}`;
+}
+
 const Message = ({
   isUser,
   msg,
   options,
   href,
-  UpdateOptions,
+  deleteOptions,
   enviarMensagem,
 }) => {
   const initiStatus = isUser ? 0 : 2;
@@ -97,43 +115,39 @@ const Message = ({
     const interval = setInterval(proximoStatus, waitTime);
     return () => clearInterval(interval);
   }, [status]);
-
+ 
   const answer = (option) => {
-    UpdateOptions(msg);
-    enviarMensagem(option);
+    deleteOptions(msg);
+    if(option == 'Sim'){
+      enviarMensagem(option);
+    }else {
+      enviarMensagem(option, 'Bye');
+    }
   };
-  return options ? (
+
+  return msg && (options ? (
     <BallonContainer user={isUser} option={1}>
       <Ballon user={isUser}>
         <p>{msg}</p>
-        <CheckIcon>{checked(status)}</CheckIcon>
+        <CheckIcon> <Hours>{getHoraAtual()}</Hours>{checked(status)}
+        </CheckIcon>
       </Ballon>
-      {!href ? (
-        <Row>
-          {options.map((option, index) => (
-            <Options key={index} onClick={() => answer(option)}>
-              {option}
+      <Row>
+          {options.map((op, index) => (
+            <Options key={index} href={op.href} onClick={() => answer(op.option)}>
+              {op.option}
             </Options>
           ))}
         </Row>
-      ) : (
-        <Row>
-          {options.map((option, index) => (
-            <Options key={index} href={href} onClick={() => answer(option)}>
-            {option}
-            </Options>
-          ))}
-        </Row>
-      )}
     </BallonContainer>
   ) : (
     <BallonContainer user={isUser}>
       <Ballon user={isUser}>
         <p>{msg}</p>
-        <CheckIcon>{checked(status)}</CheckIcon>
+        <CheckIcon><Hours>{getHoraAtual()}</Hours> {checked(status)}</CheckIcon>
       </Ballon>
     </BallonContainer>
-  );
+  ));
 };
 
 export default Message;

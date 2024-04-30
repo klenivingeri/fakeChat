@@ -1,57 +1,15 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
+import { sendEmail } from "./server/page";
 import styled from "styled-components";
 import Avatar from "./components/Avatar";
 import BoxName from "./components/BoxName";
 import Smiley from "../../public/Smiley";
 import Message from "./components/Message";
 import Send from "../../public/Send";
-
-const Question = [
-  {
-    msg: 'Você já teve alguma experiência anterior com atividades físicas?',
-    answer:'',
-  },
-  {
-    msg: 'Qual é o seu principal objetivo ao começar a praticar atividades físicas?',
-    answer:''
-  },
-  {
-    msg: 'Você tem alguma preferência por um tipo específico de exercício ou atividade?',
-    answer:''
-  },
-  {
-    msg: 'Quais são suas preocupações ou dúvidas sobre começar um programa de exercícios?',
-    answer:''
-  },
-  {
-    msg: 'Qual é o seu peso atual?',
-    answer:''
-  },
-  {
-    msg: 'Qual é a sua altura? (Para calcular o índice de massa corporal, se necessário)',
-    answer:''
-  },
-  {
-    msg: 'Qual é a sua idade atual?',
-    answer:''
-  },
-  {
-    msg: 'Você tem alguma restrição de tempo ou disponibilidade que possa afetar sua capacidade de se exercitar regularmente?',
-    answer:''
-  },
-  {
-    msg: 'Como você se sente sobre fazer ajustes na sua dieta e estilo de vida para alcançar um peso saudável?',
-    answer:''
-  },
-  {
-    msg: 'Muito obrigado por responder o questionario, gostaria de finalizar essa conversa pelo whatsap?',
-    type: "simple",
-    options: ["Sim", "Não"],
-    href:'https://api.whatsapp.com/send?phone=5516992227360&text=Ol%C3%A1,%20acabei%20de%20finalizar%20o%20question%C3%A1rio,%20e%20gostaria%20de%20continuar%20a%20conversa%20por%20aqui',
-    answer:''
-  },
-]
+import { data, msgInitialSystem } from "./utils/constants";
+import numberIsValid from "./utils/isNumero";
 
 const Container = styled.div`
   display: flex;
@@ -68,7 +26,7 @@ const Topo = styled.div`
   flex-direction: row;
   justify-content: space-between;
   color: white;
-  padding: 10px;
+  padding: 10px 10px 5px 10px;
   width: 100vw;
   position: fixed;
   top: 0;
@@ -123,86 +81,142 @@ const BoxSend = styled.div`
   background-color: #075e54;
   border-radius: 999px;
   width: 54px;
-  height: 50px;
-  padding-left: 4px;
+  height: 48px;
+  padding-left: 3.5px;
   margin-left: 10px;
 `;
 
 export default function Chat() {
-  const [count, setCount] = useState(0);
-  const [countQuestion, setCountQuestion] = useState(0);
-  const [isWrite, serIsWrite] = useState(false);
-  const [mensagens, setMensagens] = useState([]);
-  const [mensagemAtual, setMensagemAtual] = useState("");
+  const inputRef = useRef(null);
   const lastBallonRef = useRef(null);
+  const [count, setCount] = useState(0);
+  const [isWrite, serIsWrite] = useState(true);
+  const [mensagens, setMensagens] = useState([]);
+  const [nameList, setNameList] = useState("Question");
+  const [mensagemAtual, setMensagemAtual] = useState("");
+  const [countQuestion, setCountQuestion] = useState(0);
 
-  const newQuestion = (newMensagens) =>{
-    setMensagens([
-      ...newMensagens,
-      {
+  const addedNewQuestion = (
+    _newMensagens,
+    updatedNameList,
+    mensagemAtual,
+    value
+  ) => {
+    const warning = {};
+    let needToValidate = false;
+    const newNameList = !!updatedNameList ? updatedNameList : nameList;
+    const previousQuestion = _newMensagens[_newMensagens.length - 2];
+    const newMsg = data[newNameList][!!updatedNameList ? 0 : countQuestion];
+
+    if(!!newMsg) {
+      if (previousQuestion.needValid && !numberIsValid(mensagemAtual.trim())) {
+        warning.msg = "Ops, acho que faltou algum numero ^^";
+        warning.needValid = true;
+        needToValidate = true;
+      }
+  
+      const post = needToValidate ? warning : newMsg;
+      const newMensagens = [
+        ..._newMensagens,
+        {
+          user: 0,
+          ...post,
+        },
+      ];
+  
+      if (
+        !!previousQuestion.send &&
+        !!previousQuestion.options &&
+        value == "Sim"
+      ) {
+        sendEmail(newMensagens);
+      } else if (previousQuestion.send && !previousQuestion.options) {
+        sendEmail(newMensagens);
+      }
+  
+      setMensagens(newMensagens);
+    } else {
+      setMensagens([..._newMensagens,{
         user: 0,
-        ...Question[countQuestion],
-      },
-    ])
-    setCountQuestion(countQuestion+1)
-  }
-
-  const UpdateOptions = (msg) => {
-    if(msg)
-    mensagens[mensagens.length -1] = {
-      user: 0,
-      msg 
+        msg: "O chat já foi encerrado, gostaria de continuar a conversa pelo whatsap?",
+        type: "option",
+        options: [
+          {
+            option: "Sim",
+            href: "https://api.whatsapp.com/send?phone=5516992227360&text=Ol%C3%A1,%20acabei%20de%20finalizar%20o%20question%C3%A1rio,%20e%20gostaria%20de%20continuar%20a%20conversa%20por%20aqui",
+          },
+        ]
+      }]);
     }
-  }
+ 
 
-  const enviarMensagem = (value) => {
+    if (updatedNameList) {
+      setNameList(updatedNameList);
+      if (needToValidate) {
+        setCountQuestion(0);
+      } else {
+        setCountQuestion(1);
+      }
+    } else {
+      if (!needToValidate) {
+        setCountQuestion((prevCount) => prevCount + 1);
+      }
+    }
+  };
+
+  const deleteOptions = (msg) => {
+    if (msg)
+      mensagens[mensagens.length - 1] = {
+        user: 0,
+        msg,
+      };
+  };
+
+  const enviarMensagem = (value, updatedNameList) => {
+    inputRef.current.focus();
+    const lastMenssageHasOptions = !!mensagens[mensagens.length - 1]?.options;
+    if (lastMenssageHasOptions || isWrite) {
+      return;
+    }
+
+    if (!!updatedNameList) {
+      setCountQuestion(0);
+    }
+
     if (mensagemAtual.trim() || value) {
       const newMensagens = [
         ...mensagens,
         {
           user: 1,
-          msg: value? value : mensagemAtual,
+          msg: !!value ? value : mensagemAtual,
         },
-      ]
-      serIsWrite(false);
+      ];
+
+      serIsWrite(true);
       setMensagens(newMensagens);
-      setMensagemAtual("");
+
+      if (!value) {
+        setMensagemAtual("");
+      }
 
       setTimeout(() => {
-        serIsWrite(true)
-        newQuestion(newMensagens)
-      }, 2500)
+        serIsWrite(false);
+        addedNewQuestion(newMensagens, updatedNameList, mensagemAtual, value);
+      }, 2500);
     }
   };
 
   useEffect(() => {
     const waitTime = 1500;
     const maxCount = 2;
-    let msg;
     const proxMessage = () => {
-      serIsWrite(true);
       if (count <= maxCount) {
-        if (count == 0) {
-          msg = {
-            user: 0,
-            msg: "Olá, tudo bem?",
-          };
-        } else if (count == 1) {
-          msg = {
-            user: 0,
-            msg: "É muito bom saber que você está interessado em minha consultoria!",
-          };
-        } else if (count == 2) {
-          msg = {
-            user: 0,
-            msg: "Você tem um tempinho para responder algumas perguntas?",
-            type: "simple",
-            options: ["Sim", "Não"],
-          };
-        }
-        serIsWrite(false);
+        serIsWrite(true);
+        setMensagens([...mensagens, msgInitialSystem[count]]);
         setCount(count + 1);
-        setMensagens([...mensagens, msg]);
+      }
+      if (count == maxCount) {
+        serIsWrite(false);
       }
     };
 
@@ -216,6 +230,7 @@ export default function Chat() {
       lastBallonRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [mensagens]);
+
   return (
     <Container>
       <Topo>
@@ -235,7 +250,7 @@ export default function Chat() {
             type={type}
             href={href}
             enviarMensagem={enviarMensagem}
-            UpdateOptions={UpdateOptions}
+            deleteOptions={deleteOptions}
           />
         ))}
         <div ref={lastBallonRef} />
@@ -244,6 +259,7 @@ export default function Chat() {
         <InputFake>
           <Smiley />
           <InputMensagem
+            ref={inputRef}
             type="text"
             placeholder="Digite sua mensagem..."
             value={mensagemAtual}
@@ -256,7 +272,7 @@ export default function Chat() {
           />
         </InputFake>
         <BoxSend
-          onClick={(e) => {
+          onClick={() => {
             enviarMensagem();
           }}
         >
