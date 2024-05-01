@@ -130,19 +130,23 @@ export default function Chat() {
           ...post,
         },
       ];
-      if (
-        !!previousQuestion.send &&
-        value == "Sim"
-      ) {
-          await sendEmail(newMensagens, chatName);
-          window.location.href = data[chatName].whatsapp;
-          return
-      } else if (previousQuestion.send && !previousQuestion.options) {
-        sendEmail(newMensagens, chatName);
-      }
   
       setMensagens(newMensagens);
-    } else {
+    } 
+    
+    if (
+      !!previousQuestion.send &&
+      value == "Sim"
+    ) {
+      console.log ('Entrei no redirect')
+        await sendEmail(_newMensagens, chatName);
+        window.location.href = data[chatName].whatsapp;
+        return
+    } else if (previousQuestion.send && !previousQuestion.options && previousQuestion.type === 'email') {
+      sendEmail(_newMensagens, chatName);
+    }
+    
+    if(data[chatName][newNameList].length === countQuestion){
       setMensagens([..._newMensagens,{
         user: 0,
         msg: "O chat já foi encerrado, gostaria de continuar a conversa pelo whatsapp?",
@@ -157,6 +161,7 @@ export default function Chat() {
       }]);
     }
  
+
 
     if (updatedNameList) {
       setNameList(updatedNameList);
@@ -212,7 +217,7 @@ export default function Chat() {
       setTimeout(() => {
         serIsWrite(false);
         addedNewQuestion(newMensagens, updatedNameList, mensagemAtual, value);
-      }, 2500);
+      }, 500);
     }
   };
   
@@ -266,7 +271,6 @@ export default function Chat() {
             isUser={user}
             msg={msg}
             options={options}
-            type={type}
             send={send}
             enviarMensagem={enviarMensagem}
             deleteOptions={deleteOptions}

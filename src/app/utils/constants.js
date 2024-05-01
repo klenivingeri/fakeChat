@@ -56,7 +56,7 @@ export const data = {
       },
       {
         msg: "Muito obrigado por responder o questionario, gostaria de finalizar essa conversa pelo whatsap?",
-        type: "option",
+        type: "email",
         resp: false,
         send: true,
         options: [
@@ -78,7 +78,7 @@ export const data = {
       },
       {
         msg: "Qual seria o melhor horario para contato?",
-        type: "simple",
+        type: "email",
         resp: false,
         send: true,
       },
