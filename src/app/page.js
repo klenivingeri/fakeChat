@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { sendEmail, testEnd } from "./server/page";
+import { sendEmail, testEnd } from "./server";
 import styled from "styled-components";
 import Avatar from "./components/Avatar";
 import BoxName from "./components/BoxName";
