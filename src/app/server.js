@@ -8,43 +8,35 @@ export const testEnd = () => ({
   pass: process.env.PASS,
 });
 
-export const sendEmail = (msgs) => {
-  let htmlChat = "";
-  msgs.map((m) => {
-    if (m.msg) {
-      if (m.user == 0) {
-        htmlChat = htmlChat + `<p><b>${m.msg}</b></p>`;
-      } else {
-        htmlChat = htmlChat + `<p>${m.msg}</p>`;
-      }
-    }
-  });
+const transporter = nodemailer.createTransport({
+  host: 'sandbox.smtp.mailtrap.io',
+  port: 2525,
+  secure: false,
+  auth: {
+    user: process.env.USER,
+    pass: process.env.PASS,
+  },
+});
 
-  var transporter = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    secure: false,
-    auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
-    },
-  });
+export const sendEmail = async (msgs) => {
+  let htmlChat = msgs
+    .map((m) => `<p>${m.user === 0 ? `<b>${m.msg}</b>` : m.msg}</p>`)
+    .join('');
 
-  // Definições do e-mail
   const mailOptions = {
-    from: "noreplay@celke.com.br",
-    to: "1234@celke.com.br",
-    subject: "Assunto do e-mail",
-    text: "Conteúdo do e-mail",
-    html: `${htmlChat}`,
+    from: 'noreply@celke.com.br',
+    to: '1234@celke.com.br',
+    subject: 'Assunto do e-mail',
+    text: 'Conteúdo do e-mail',
+    html: htmlChat,
   };
 
-  // Enviar e-mail
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.error("Erro ao enviar e-mail:", error);
-    } else {
-      console.log("E-mail enviado:", info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('E-mail enviado:', info.response);
+    return info;
+  } catch (error) {
+    console.error('Erro ao enviar e-mail:', error);
+    throw error;
+  }
 };
