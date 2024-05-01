@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { sendEmail } from "./server/page";
+import { sendEmail, testEnd } from "./server/page";
 import styled from "styled-components";
 import Avatar from "./components/Avatar";
 import BoxName from "./components/BoxName";
 import Smiley from "../../public/Smiley";
 import Message from "./components/Message";
 import Send from "../../public/Send";
-import { data, msgInitialSystem } from "./utils/constants";
+import { data } from "./utils/constants";
 import numberIsValid from "./utils/isNumero";
 
 const Container = styled.div`
@@ -86,17 +86,24 @@ const BoxSend = styled.div`
   margin-left: 10px;
 `;
 
+const queryURL = (name) => {
+  const queryString = window.location.search;
+  const params = new URLSearchParams(queryString);
+  return params.get(name);
+}
+
 export default function Chat() {
   const inputRef = useRef(null);
   const lastBallonRef = useRef(null);
   const [count, setCount] = useState(0);
   const [isWrite, serIsWrite] = useState(true);
   const [mensagens, setMensagens] = useState([]);
-  const [nameList, setNameList] = useState("Question");
+  const [nameList, setNameList] = useState("question");
   const [mensagemAtual, setMensagemAtual] = useState("");
   const [countQuestion, setCountQuestion] = useState(0);
+  const [chatName, setChatName] = useState('');
 
-  const addedNewQuestion = (
+  const  addedNewQuestion = async (
     _newMensagens,
     updatedNameList,
     mensagemAtual,
@@ -106,9 +113,9 @@ export default function Chat() {
     let needToValidate = false;
     const newNameList = !!updatedNameList ? updatedNameList : nameList;
     const previousQuestion = _newMensagens[_newMensagens.length - 2];
-    const newMsg = data[newNameList][!!updatedNameList ? 0 : countQuestion];
+    const newMsg = data[chatName][newNameList][!!updatedNameList ? 0 : countQuestion];
 
-    if(!!newMsg) {
+    if(data[chatName][newNameList].length !== countQuestion) {
       if (previousQuestion.needValid && !numberIsValid(mensagemAtual.trim())) {
         warning.msg = "Ops, acho que faltou algum numero ^^";
         warning.needValid = true;
@@ -123,27 +130,31 @@ export default function Chat() {
           ...post,
         },
       ];
-  
+      console.log(previousQuestion)
       if (
         !!previousQuestion.send &&
-        !!previousQuestion.options &&
         value == "Sim"
       ) {
-        sendEmail(newMensagens);
+        console.log('entrei')
+          await sendEmail(newMensagens);
+          window.location.href = data[chatName].whatsapp;
+          return
       } else if (previousQuestion.send && !previousQuestion.options) {
         sendEmail(newMensagens);
       }
   
       setMensagens(newMensagens);
     } else {
+      console.log('entrou')
       setMensagens([..._newMensagens,{
         user: 0,
-        msg: "O chat já foi encerrado, gostaria de continuar a conversa pelo whatsap?",
+        msg: "O chat já foi encerrado, gostaria de continuar a conversa pelo whatsapp?",
         type: "option",
+        send: true,
         options: [
           {
             option: "Sim",
-            href: "https://api.whatsapp.com/send?phone=5516992227360&text=Ol%C3%A1,%20acabei%20de%20finalizar%20o%20question%C3%A1rio,%20e%20gostaria%20de%20continuar%20a%20conversa%20por%20aqui",
+            href: data[chatName].whatsapp,
           },
         ]
       }]);
@@ -164,11 +175,12 @@ export default function Chat() {
     }
   };
 
-  const deleteOptions = (msg) => {
+  const deleteOptions = (msg, send) => {
     if (msg)
       mensagens[mensagens.length - 1] = {
         user: 0,
         msg,
+        send,
       };
   };
 
@@ -189,6 +201,7 @@ export default function Chat() {
         {
           user: 1,
           msg: !!value ? value : mensagemAtual,
+
         },
       ];
 
@@ -205,14 +218,18 @@ export default function Chat() {
       }, 2500);
     }
   };
-
+  
   useEffect(() => {
+    testEnd()
+    const name = queryURL('chat')
+    setChatName(name)
     const waitTime = 1500;
     const maxCount = 2;
+    if(!!name){
     const proxMessage = () => {
       if (count <= maxCount) {
         serIsWrite(true);
-        setMensagens([...mensagens, msgInitialSystem[count]]);
+        setMensagens([...mensagens, data[name]?.msgInitialSystem[count]]);
         setCount(count + 1);
       }
       if (count == maxCount) {
@@ -223,6 +240,8 @@ export default function Chat() {
     const interval = setTimeout(proxMessage, waitTime);
 
     return () => clearTimeout(interval);
+    }
+
   }, [count]);
 
   useEffect(() => {
@@ -231,24 +250,28 @@ export default function Chat() {
     }
   }, [mensagens]);
 
+  useEffect(() => {
+
+  },[])
+
   return (
     <Container>
       <Topo>
         <Description>
-          <Avatar />
-          <BoxName isWrite={isWrite} />
+          <Avatar img={data[chatName]?.image }/>
+          <BoxName name={data[chatName]?.name} isWrite={isWrite} />
         </Description>
         <div>||</div>
       </Topo>
       <Mensagens>
-        {mensagens.map(({ user, msg, options, type, href }, index) => (
+        {mensagens.map(({ user, msg, options, type, send }, index) => (
           <Message
             key={index}
             isUser={user}
             msg={msg}
             options={options}
             type={type}
-            href={href}
+            send={send}
             enviarMensagem={enviarMensagem}
             deleteOptions={deleteOptions}
           />

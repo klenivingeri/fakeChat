@@ -15,11 +15,11 @@ const Status = styled.div`
     font-size: 1rem;
 `
 
-const BoxName = ({isWrite}) => {
+const BoxName = ({name, isWrite}) => {
 return (
     <DivNav>
-        <Name>Erick Kleniving</Name>
-        <Status>{isWrite ? 'Digitando...' : 'Online' }</Status>
+        <Name>{name ? name : 'Carregando'}</Name>
+        <Status>{isWrite && name ? 'Digitando...' : 'Online' }</Status>
     </DivNav>
 )
 }

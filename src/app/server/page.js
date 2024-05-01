@@ -1,5 +1,10 @@
 "use server"
 import nodemailer from "nodemailer";
+import dotenv  from 'dotenv'
+dotenv.config();
+
+export const testEnd = () => console.log(process.env.USER)
+
 
 export const sendEmail = (msgs) => {
       let htmlChat = ''
@@ -17,8 +22,8 @@ export const sendEmail = (msgs) => {
         host: "sandbox.smtp.mailtrap.io",
         port: 2525,
         auth: {
-          user: "04a38f6e242ce7",
-          pass: "4d2c4ce36058c2"
+          user: process.env.USER,
+          pass: process.env.PASS
         }
       });
       

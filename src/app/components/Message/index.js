@@ -95,7 +95,7 @@ const Message = ({
   isUser,
   msg,
   options,
-  href,
+  send,
   deleteOptions,
   enviarMensagem,
 }) => {
@@ -115,13 +115,12 @@ const Message = ({
     const interval = setInterval(proximoStatus, waitTime);
     return () => clearInterval(interval);
   }, [status]);
- 
   const answer = (option) => {
-    deleteOptions(msg);
+    deleteOptions(msg,send);
     if(option == 'Sim'){
       enviarMensagem(option);
     }else {
-      enviarMensagem(option, 'Bye');
+      enviarMensagem(option, 'bye');
     }
   };
 

@@ -4,8 +4,10 @@ const Imagem = styled.img`
     border-radius: 999px;
 `
 
-const Avatar = () => {
-    return (<Imagem width="40" height="40" src="https://th.bing.com/th/id/OIP.PqBYGErQeWQWhbA_VeUBDQHaHa?rs=1&pid=ImgDetMain"/>)
+const Avatar = ({img}) => {
+    return !!img 
+    ?(<Imagem width="40" height="40" src={img} />)
+    :(<Imagem width="40" height="40" src='./user.png' />)
 }
 
 export default Avatar

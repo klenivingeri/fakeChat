@@ -1,18 +1,13 @@
 export const data = {
-    Question: [
+  poliane: {
+    name: 'Poliane Personal',
+    image: 'https://scontent.ffrc5-1.fna.fbcdn.net/v/t39.30808-6/432455789_7230535057023466_603031832992687761_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=5f2048&_nc_ohc=4QXZFFVgsK0Q7kNvgGhH7Gm&_nc_ht=scontent.ffrc5-1.fna&oh=00_AfC1RZwZ79dk9TdE9vKWSznDYhbRsfoHpldvKUHGjPiT6w&oe=66385514',
+    whatsapp: 'https://api.whatsapp.com/send?phone=5516992227360&text=Ol%C3%A1,%20acabei%20de%20finalizar%20o%20question%C3%A1rio,%20e%20gostaria%20de%20continuar%20a%20conversa%20por%20aqui',
+    question: [
       {
         user: 0,
-        msg: "Você tem um tempinho para responder algumas perguntas?",
-        type: "option",
-        resp: false,
-        options: [
-          {
-            option: "Sim",
-          },
-          {
-            option: "Não",
-          },
-        ],
+        msg: "Qual seu nome?",
+        type: "simple",
       },
       {
         msg: "Você já teve alguma experiência anterior com atividades físicas?",
@@ -67,7 +62,6 @@ export const data = {
         options: [
           {
             option: "Sim",
-            href: "https://api.whatsapp.com/send?phone=5516992227360&text=Ol%C3%A1,%20acabei%20de%20finalizar%20o%20question%C3%A1rio,%20e%20gostaria%20de%20continuar%20a%20conversa%20por%20aqui",
           },
           {
             option: "Não",
@@ -75,7 +69,7 @@ export const data = {
         ],
       },
     ],
-    Bye: [
+    bye: [
       {
         msg: "Entendi, poderia deixar o numero para contato, assim posso retornar outra hora?",
         type: 'validation',
@@ -94,22 +88,32 @@ export const data = {
         resp: false,
       }
     ],
-  };
+    msgInitialSystem: [
+      {
+        user: 0,
+        msg: "Olá, tudo bem?",
+        type: "simple",
+      },
+      {
+        user: 0,
+        msg: "É muito bom saber que você está interessado em minha consultoria!",
+        type: "simple",
+      },
+      {
+        user: 0,
+        msg: "Você tem um tempinho para responder algumas perguntas?",
+        type: "option",
+        resp: false,
+        options: [
+          {
+            option: "Sim",
+          },
+          {
+            option: "Não",
+          },
+        ],
+      },
+    ]
+  }
+};
   
-export const msgInitialSystem = [
-    {
-      user: 0,
-      msg: "Olá, tudo bem?",
-      type: "simple",
-    },
-    {
-      user: 0,
-      msg: "É muito bom saber que você está interessado em minha consultoria!",
-      type: "simple",
-    },
-    {
-      user: 0,
-      msg: "Qual seu nome?",
-      type: "simple",
-    },
-  ];
