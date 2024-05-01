@@ -130,12 +130,10 @@ export default function Chat() {
           ...post,
         },
       ];
-      console.log(previousQuestion)
       if (
         !!previousQuestion.send &&
         value == "Sim"
       ) {
-        console.log('entrei')
           await sendEmail(newMensagens);
           window.location.href = data[chatName].whatsapp;
           return
@@ -145,7 +143,6 @@ export default function Chat() {
   
       setMensagens(newMensagens);
     } else {
-      console.log('entrou')
       setMensagens([..._newMensagens,{
         user: 0,
         msg: "O chat já foi encerrado, gostaria de continuar a conversa pelo whatsapp?",
@@ -220,7 +217,7 @@ export default function Chat() {
   };
   
   useEffect(() => {
-    testEnd()
+    testEnd().then(response => console.log(response))
     const name = queryURL('chat')
     setChatName(name)
     const waitTime = 1500;

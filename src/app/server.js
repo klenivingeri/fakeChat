@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 import dotenv  from 'dotenv'
 dotenv.config();
 
-export const testEnd = () => console.log(process.env.USER)
+export const testEnd = () => ( { user:process.env.USER, pass:process.env.PASS})
 
 
 export const sendEmail = (msgs) => {
