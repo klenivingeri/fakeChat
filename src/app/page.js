@@ -134,11 +134,11 @@ export default function Chat() {
         !!previousQuestion.send &&
         value == "Sim"
       ) {
-          await sendEmail(newMensagens);
+          await sendEmail(newMensagens, chatName);
           window.location.href = data[chatName].whatsapp;
           return
       } else if (previousQuestion.send && !previousQuestion.options) {
-        sendEmail(newMensagens);
+        sendEmail(newMensagens, chatName);
       }
   
       setMensagens(newMensagens);
@@ -217,7 +217,6 @@ export default function Chat() {
   };
   
   useEffect(() => {
-    testEnd().then(response => console.log(response))
     const name = queryURL('chat')
     setChatName(name)
     const waitTime = 1500;

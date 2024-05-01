@@ -3,22 +3,18 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const testEnd = () => ({
-  user: process.env.USER,
-  pass: process.env.PASS,
-});
+export const sendEmail = async (msgs, user) => {
 
-const transporter = nodemailer.createTransport({
-  host: 'sandbox.smtp.mailtrap.io',
-  port: 2525,
-  secure: false,
-  auth: {
-    user: process.env.USER,
-    pass: process.env.PASS,
-  },
-});
+  const transporter = nodemailer.createTransport({
+    host: 'sandbox.smtp.mailtrap.io',
+    port: 2525,
+    secure: false,
+    auth: {
+      user: process.env['USER'+user.toUpperCase()],
+      pass: process.env['PASS'+user.toUpperCase()],
+    },
+  });
 
-export const sendEmail = async (msgs) => {
   let htmlChat = msgs
     .map((m) => `<p>${m.user === 0 ? `<b>${m.msg}</b>` : m.msg}</p>`)
     .join('');
