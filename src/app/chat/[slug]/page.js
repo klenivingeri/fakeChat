@@ -79,49 +79,96 @@ const BoxSend = styled.div`
   margin-left: 10px;
 `;
 
+const findAndCollectInfo = (array, targetItem) => {
+  const startIndex = array.findIndex(
+    (item) => item.msg === targetItem.msg && item.resp === targetItem.resp
+  );
+  if (startIndex === -1) {
+    return [];
+  }
+
+  return array.slice(startIndex);
+};
+
+const wait = async (time = 2500) => {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
 const Chat = ({ params }) => {
   const inputRef = useRef(null);
-  const [mensagemAtual, setMensagemAtual] = useState("");
   const [countMessege, setCountMessege] = useState(0);
   const [nameList, setNameList] = useState("question");
   const [records, setRecords] = useState({});
   const [messages, setMessages] = useState([]);
 
-  const addSystemMessageToConversation = (newMsg) => {
-    setMessages([
-      ...newMsg,
-      {
-        ...records.list[nameList][countMessege],
-      },
-    ]);
-    setCountMessege((prevCount) => prevCount + 1);
-  };
+  const addSystemMessageToConversation = async ({
+    userResp,
+    _records,
+  }) => {
 
-  const addUserMessageToConversation = (newMsg) => {
-    setMessages(newMsg);
-  }
+    const rec = records?.list || _records?.list;
+    if (!rec) {
+      console.error("Records not found or list is undefined.");
+      return;
+    }
 
-  const addMessageToConversation = (e, userResp) => {
-    e.preventDefault();
-    const mensagem = userResp ? userResp : inputRef.current.value;
-    
-    if(!!mensagem){
-      const newMsg = [
-        ...messages,
-        {
-          msg: mensagem,
-          user: 1
-        },
-      ]
-      
-      addUserMessageToConversation(newMsg);
-      addSystemMessageToConversation(newMsg, userResp);
-      inputRef.current.value = ""
+    const _nameList = nameList || "question";
+    if (countMessege < rec[_nameList].length) {
+      const systemMessage = rec[_nameList][countMessege];
+      let count = countMessege;
+
+      if (systemMessage.resp) {
+        count = count + 1;
+        await wait()
+        setMessages((prevMessages) => [...prevMessages, systemMessage])
+      } else {
+        const arr = [];
+        findAndCollectInfo(rec[_nameList], systemMessage).findIndex(
+          (message) => {
+            count = count + 1;
+            arr.push(message);
+            return message.resp;
+          }
+        );
+
+        for (const msg of arr) {
+          await wait()
+          setMessages((prevMessages) => [...prevMessages, msg]);
+        }
+      }
+
+      setCountMessege(count);
+    } else {
+      setMessages((prevMessages) => [...prevMessages, { user: 0, msg: "fim", resp: false }])
     }
   };
 
+  const addUserMessageToConversation = (newMessage) => {
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+  };
+
+  const addMessageToConversation = (e, userResp) => {
+    e?.preventDefault();
+    const mensagem = userResp || inputRef.current.value;
+
+    if (!!mensagem) {
+      addUserMessageToConversation({
+        msg: mensagem,
+        user: 1,
+      });
+      addSystemMessageToConversation({ userResp });
+      inputRef.current.value = "";
+    }
+  };
+
+  let aa = false
   useEffect(() => {
-    getData(params.slug).then((resp) => setRecords(resp));
+    getData(params.slug).then((resp) => {
+      setRecords(resp);
+      if(aa){
+        addSystemMessageToConversation({ _records: resp });
+      }
+      aa = true
+    });
   }, []);
 
   return (
@@ -136,11 +183,9 @@ const Chat = ({ params }) => {
             type="text"
             placeholder="Digite sua mensagem..."
             name="text"
-            onChange={(e) => setMensagemAtual(e.target.value)}
           />
           <button type="submit">Enviar</button>
         </form>
-        
       </InputFake>
     </div>
   );

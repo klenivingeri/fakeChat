@@ -126,56 +126,57 @@ export const dataChat = {
       question: [
         {
           user: 0,
-          msg: "Qual seu nome?",
-          type: "simple",
-        },
-        {
-          msg: "Você já teve alguma experiência anterior com atividades físicas?",
+          msg: "1 - Qual seu nome?",
           type: "simple",
           resp: false,
         },
         {
-          msg: "Qual é o seu principal objetivo ao começar a praticar atividades físicas?",
+          msg: "2 - Você já teve alguma experiência anterior com atividades físicas?",
           type: "simple",
           resp: false,
         },
         {
-          msg: "Você tem alguma preferência por um tipo específico de exercício ou atividade?",
+          msg: "3 - Qual é o seu principal objetivo ao começar a praticar atividades físicas?",
           type: "simple",
           resp: false,
         },
         {
-          msg: "Quais são suas preocupações ou dúvidas sobre começar um programa de exercícios?",
+          msg: "4 - Você tem alguma preferência por um tipo específico de exercício ou atividade?",
+          type: "simple",
+          resp: true,
+        },
+        {
+          msg: "5 - Quais são suas preocupações ou dúvidas sobre começar um programa de exercícios?",
+          type: "simple",
+          resp: true,
+        },
+        {
+          msg: "6 - Qual é o seu peso atual?",
           type: "simple",
           resp: false,
         },
         {
-          msg: "Qual é o seu peso atual?",
+          msg: "7 - Qual é a sua altura? (Para calcular o índice de massa corporal, se necessário)",
           type: "simple",
           resp: false,
         },
         {
-          msg: "Qual é a sua altura? (Para calcular o índice de massa corporal, se necessário)",
+          msg: "8 - Qual é a sua idade atual?",
           type: "simple",
-          resp: false,
+          resp: true,
         },
         {
-          msg: "Qual é a sua idade atual?",
+          msg: "9 - Você tem alguma restrição de tempo ou disponibilidade que possa afetar sua capacidade de se exercitar regularmente?",
           type: "simple",
-          resp: false,
+          resp: true,
         },
         {
-          msg: "Você tem alguma restrição de tempo ou disponibilidade que possa afetar sua capacidade de se exercitar regularmente?",
+          msg: "10 - Como você se sente sobre fazer ajustes na sua dieta e estilo de vida para alcançar um peso saudável?",
           type: "simple",
-          resp: false,
+          resp: true,
         },
         {
-          msg: "Como você se sente sobre fazer ajustes na sua dieta e estilo de vida para alcançar um peso saudável?",
-          type: "simple",
-          resp: false,
-        },
-        {
-          msg: "Muito obrigado por responder o questionario, gostaria de finalizar essa conversa pelo whatsap?",
+          msg: "11 - Muito obrigado por responder o questionario, gostaria de finalizar essa conversa pelo whatsap?",
           type: "email",
           resp: false,
           send: true,
