@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { sendEmail, testEnd } from "./server";
+import { sendEmail } from "./server";
 import styled from "styled-components";
 import Avatar from "./components/Avatar";
 import BoxName from "./components/BoxName";
@@ -217,7 +217,7 @@ export default function Chat() {
       setTimeout(() => {
         serIsWrite(false);
         addedNewQuestion(newMensagens, updatedNameList, mensagemAtual, value);
-      }, 500);
+      }, 2500);
     }
   };
   

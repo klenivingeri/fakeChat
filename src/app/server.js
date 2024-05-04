@@ -1,10 +1,14 @@
 "use server";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { dataChat } from "./utils/constants";
 dotenv.config();
 
-export const sendEmail = async (msgs, user) => {
+export const getData = (name) => {
+  return dataChat[name]
+}
 
+export const sendEmail = async (msgs, user) => {
   const transporter = nodemailer.createTransport({
     host: 'sandbox.smtp.mailtrap.io',
     port: 2525,
