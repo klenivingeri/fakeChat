@@ -18,7 +18,7 @@ const Status = styled.div`
 const BoxName = ({name, isWrite}) => {
 return (
     <DivNav>
-        <Name>{name ? name : 'Carregando'}</Name>
+        <Name>{name ? name : 'Carregando..'}</Name>
         <Status>{isWrite && name ? 'Digitando...' : 'Online' }</Status>
     </DivNav>
 )

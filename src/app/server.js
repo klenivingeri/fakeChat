@@ -1,12 +1,29 @@
 "use server";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import { dataChat } from "./utils/constants";
 dotenv.config();
 
-export const getData = (name) => {
+
+export const getData = async (params) => {
+  try {
+    const response = await fetch(process.env.URL + '/api/' + params);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+
+  }
+};
+
+
+/* export const getData = (name) => {
   return dataChat[name]
 }
+ */
+
 
 export const sendEmail = async (msgs, user) => {
   const transporter = nodemailer.createTransport({

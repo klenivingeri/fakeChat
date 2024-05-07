@@ -14,23 +14,20 @@ const BallonContainer = styled.div`
 const Ballon = styled.div`
   background-color: ${({ user }) => (user ? "#dcf8c6" : "#ffffff")};
   color: black;
-  padding: 8px 12px;
+  padding: 7px 8px 4px 8px;
   border-radius: 10px;
   margin: 5px;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-  align-items: end;
+ 
   &::after {
     content: "";
     background-color: ${({ user }) => (user ? "#dcf8c6" : "#ffffff")};
-    width: 15px;
-    height: 15px;
+    width: 13px;
+    height: 13px;
     position: absolute;
     ${({ user }) => (user ? "right: 1px;" : "left: 1px;")};
     border-radius: 5px;
-    top: 9px;
+    top: 7px;
     transform: ${({ user }) => (user ? "rotate(30deg)" : "rotate(60deg)")};
   }
 `;
@@ -43,16 +40,19 @@ const Row = styled.div`
 
 const CheckIcon = styled.div`
   display: flex;
-  margin-left: 5px;
   justify-content: center;
-  align-items: end;
-  width: 60px;
+  align-items: flex-start;
+  width: 45px;
+  float: right;  
+  margin-top: 11px;
+  margin-left: 5px;
 `;
 
 const Hours = styled.span`
   font-size: 0.7rem;
   color: #a9a6a7;
-`
+`;
+
 const Options = styled.a`
   display: flex;
   flex-direction: row;
@@ -67,6 +67,10 @@ const Options = styled.a`
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 `;
 
+const Paragraph = styled.div`
+
+` 
+
 const checked = (status) => {
   if (status == 0) {
     return <Union1 />;
@@ -78,7 +82,6 @@ const checked = (status) => {
     return <Union3 />;
   }
 };
-
 
 function getHoraAtual() {
   const dataAtual = new Date();
@@ -92,14 +95,12 @@ function getHoraAtual() {
 }
 
 const Message = ({
-  isUser,
-  msg,
-  options,
-  send,
-  deleteOptions,
-  enviarMensagem,
+  message,
+  updateLastMessage,
+  addMessageToConversation,
 }) => {
-  const initiStatus = isUser ? 0 : 2;
+  const {options,msg,  user } = message
+  const initiStatus = user ? 0 : 2;
   const [status, setStatus] = useState(initiStatus);
 
   useEffect(() => {
@@ -107,7 +108,7 @@ const Message = ({
     const maxStatus = 2;
 
     const proximoStatus = () => {
-      if (status < maxStatus && isUser) {
+      if (status < maxStatus && user) {
         setStatus(status + 1);
       }
     };
@@ -116,37 +117,36 @@ const Message = ({
     return () => clearInterval(interval);
   }, [status]);
   const answer = (option) => {
-    deleteOptions(msg,send);
-    if(option == 'Sim'){
-      enviarMensagem(option);
-    }else {
-      enviarMensagem(option, 'bye');
-    }
+    updateLastMessage(message)
+    message.resp = option
+    addMessageToConversation({userResp: message})
   };
 
-  return msg && (options ? (
-    <BallonContainer user={isUser} option={1}>
-      <Ballon user={isUser}>
-        <p>{msg}</p>
-        <CheckIcon> <Hours>{getHoraAtual()}</Hours>{checked(status)}
-        </CheckIcon>
-      </Ballon>
-      <Row>
-          {options.map((op, index) => (
-            <Options key={index} href={op.href} onClick={() => answer(op.option)}>
+  return (
+    msg && (
+      <BallonContainer user={user} option={options?.length}>
+        <Ballon user={user}>
+          <Paragraph>{msg}
+          <CheckIcon>
+            <Hours>{getHoraAtual()}</Hours>
+            {checked(status)}
+          </CheckIcon>
+          </Paragraph>
+          
+        </Ballon>
+        <Row>
+          {options && options.map((op, index) => (
+            <Options
+              key={index}
+              onClick={() => answer(op)}
+            >
               {op.option}
             </Options>
           ))}
         </Row>
-    </BallonContainer>
-  ) : (
-    <BallonContainer user={isUser}>
-      <Ballon user={isUser}>
-        <p>{msg}</p>
-        <CheckIcon><Hours>{getHoraAtual()}</Hours> {checked(status)}</CheckIcon>
-      </Ballon>
-    </BallonContainer>
-  ));
+      </BallonContainer>
+    )
+  );
 };
 
 export default Message;
