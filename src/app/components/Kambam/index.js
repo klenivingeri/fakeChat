@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import ItemAccordion from "../ItemAccordion";
-import { Box } from '@mui/material';
+import Box from "@mui/material/Box";
+
+import Modal from "@mui/material/Modal";
+import BoxEditavel from "../BoxEditavel";
+
 const Container = styled.div`
   * {
     margin: 0;
@@ -38,20 +42,37 @@ const Container = styled.div`
   }
 `;
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
+
 const Kanban = ({ initialItems, setItems }) => {
   const [startTime, setStartTime] = useState(null);
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const [selectItem, setSelectItem] = useState({})
 
   const handleTouchStart = () => {
     setStartTime(new Date());
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (item) => {
     if (startTime) {
       const endTime = new Date();
       const diferencaEmMilissegundos = endTime - startTime;
       const segundosPassados = diferencaEmMilissegundos / 1000;
-      if (segundosPassados > 2) {
-        alert(`Tempo de toque: ${segundosPassados.toFixed(2)} segundos`);
+      if (segundosPassados > 1.5) {
+        handleOpen()
+        setSelectItem(item)
       }
     }
   };
@@ -152,13 +173,9 @@ const Kanban = ({ initialItems, setItems }) => {
     };
 
     const updateItemsOrder = (e) => {
-      const updatedItems = Array.from(e.target.parentNode.children).map(
-        (child) => {
-          return initialItems.find(
-            (item) => item.id === parseInt(child.dataset.itemId)
-          );
-        }
-      );
+      const updatedItems = Array.from(e.currentTarget.children).map((child) => {
+        return initialItems.find((item) => item.id === parseInt(child.dataset.itemId));
+      });
       setItems(updatedItems);
     };
 
@@ -190,10 +207,10 @@ const Kanban = ({ initialItems, setItems }) => {
               draggable
               data-item-id={item.id}
               onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
+              onTouchEnd={() => {handleTouchEnd(item)}}
             >
-              
               <Box
+              key={item.id}
                 sx={{
                   display: { xs: "block", md: "none" },
                 }}
@@ -211,6 +228,16 @@ const Kanban = ({ initialItems, setItems }) => {
           ))}
         </div>
       </div>
+      <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <BoxEditavel />
+            </Box>
+          </Modal>
     </Container>
   );
 };

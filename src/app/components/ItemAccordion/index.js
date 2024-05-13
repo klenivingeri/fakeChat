@@ -3,9 +3,8 @@ import { Accordion, Box } from '@mui/material';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import BoxEditavel from '../BoxEditavel';
 
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 
 export default function ItemAccordion(props) {
     const { item } = props
@@ -20,16 +19,7 @@ export default function ItemAccordion(props) {
           {item.msg}
         </AccordionSummary>
         <AccordionDetails>
-        <Box sx={{
-            display:'flex'
-        }}>
-        <TextField 
-        sx={{ width:"100%"}}
-        size="small"
-        id="outlined-basic" label="Clique aqui para atualizar a frase..." variant="outlined" />
-        <Button sx={{ marginLeft: '10px'}} size="small" variant="contained">Atualizar</Button>
-
-        </Box>
+          <BoxEditavel />
         </AccordionDetails>
       </Accordion>
     </div>

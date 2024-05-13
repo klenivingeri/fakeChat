@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Kanban from '../Kambam';
 
@@ -9,6 +9,10 @@ export default function ContainerList(props) {
    } = props 
 
    const [items, setItems] = useState({});
+   
+   useEffect(() =>{
+    setItems
+   }, [])
   return (
 <Box sx={{ 
 
