@@ -4,29 +4,26 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SelectMobile() {
-  const [age, setAge] = React.useState('');
+export default function SelectMobile(props) {
+  const { 
+    listName,
+    setCurrentList
+   } = props 
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setCurrentList(event.target.value);
   };
 
   return (
-    <FormControl sx={{ p:1, width:'100%' }} size="small">
-      <InputLabel id="demo-select-small-label">Age</InputLabel>
+    <FormControl sx={{ width:'100%' }} size="small">
+      <InputLabel id="demo-select-small-label">Selecione uma lista...</InputLabel>
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
-        value={age}
         label="Age"
         onChange={handleChange}
       >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        <MenuItem value={10}>Ten</MenuItem>
-        <MenuItem value={20}>Twenty</MenuItem>
-        <MenuItem value={30}>Thirty</MenuItem>
+        {listName.map((list, i) => <MenuItem key={i} value={list}>{list.name}</MenuItem>)}
       </Select>
     </FormControl>
   );

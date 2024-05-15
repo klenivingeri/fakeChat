@@ -13,10 +13,13 @@ const Container = styled.div`
     font-family: "poppins";
   }
 
+  display: flex;
+  flex: 1;
+  padding-right: 10px;
   .kanban {
     display: flex;
-    min-height: 300px;
     gap: 10px;
+    flex: 1;
   }
 
   .column {
@@ -24,8 +27,8 @@ const Container = styled.div`
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background-color: cadetblue;
     border-radius: 5px;
+    flex: 1;
   }
 
   .item {
@@ -54,12 +57,12 @@ const style = {
   p: 4,
 };
 
-const Kanban = ({ initialItems, setItems }) => {
+const Kanban = ({ initialItems, setItems, listName }) => {
   const [startTime, setStartTime] = useState(null);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [selectItem, setSelectItem] = useState({})
+  const [selectItem, setSelectItem] = useState({});
 
   const handleTouchStart = () => {
     setStartTime(new Date());
@@ -71,8 +74,8 @@ const Kanban = ({ initialItems, setItems }) => {
       const diferencaEmMilissegundos = endTime - startTime;
       const segundosPassados = diferencaEmMilissegundos / 1000;
       if (segundosPassados > 1.5) {
-        handleOpen()
-        setSelectItem(item)
+        handleOpen();
+        setSelectItem(item);
       }
     }
   };
@@ -174,7 +177,9 @@ const Kanban = ({ initialItems, setItems }) => {
 
     const updateItemsOrder = (e) => {
       const updatedItems = Array.from(e.currentTarget.children).map((child) => {
-        return initialItems.find((item) => item.id === parseInt(child.dataset.itemId));
+        return initialItems.find(
+          (item) => item.id === parseInt(child.dataset.itemId)
+        );
       });
       setItems(updatedItems);
     };
@@ -207,37 +212,48 @@ const Kanban = ({ initialItems, setItems }) => {
               draggable
               data-item-id={item.id}
               onTouchStart={handleTouchStart}
-              onTouchEnd={() => {handleTouchEnd(item)}}
+              onTouchEnd={() => {
+                handleTouchEnd(item);
+              }}
             >
               <Box
-              key={item.id}
+                key={item.id}
                 sx={{
                   display: { xs: "block", md: "none" },
                 }}
               >
-                <div>{item.msg}</div>
+                <Box
+                  sx={{
+                    boxShadow: " rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                    borderRadius: '10px',
+                    marginLeft: '10px',
+                    padding: '10px',
+                  }}
+                >
+                  {item.msg}
+                </Box>
               </Box>
               <Box
                 sx={{
                   display: { xs: "none", md: "block" },
                 }}
               >
-                <ItemAccordion item={item} />
+                <ItemAccordion item={item} > <BoxEditavel options={listName} /></ItemAccordion>
               </Box>
             </div>
           ))}
         </div>
       </div>
       <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={style}>
-              <BoxEditavel />
-            </Box>
-          </Modal>
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <BoxEditavel handleClose={handleClose} />
+        </Box>
+      </Modal>
     </Container>
   );
 };
