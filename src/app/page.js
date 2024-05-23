@@ -55,6 +55,7 @@ export default function controlPanel() {
     _records.list[currentList.id].push(novaMsg)
     setRecords((preState) => ({...preState, ..._records}))
   }
+  
   return (
     hydrate && (
       <Container
@@ -68,7 +69,6 @@ export default function controlPanel() {
         <Box
           component="section"
           sx={{
-            border: "1px solid grey",
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
 

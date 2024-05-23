@@ -73,7 +73,7 @@ const Kanban = ({ initialItems, setItems, listName }) => {
       const endTime = new Date();
       const diferencaEmMilissegundos = endTime - startTime;
       const segundosPassados = diferencaEmMilissegundos / 1000;
-      if (segundosPassados > 1.5) {
+      if (segundosPassados > 1.2) {
         handleOpen();
         setSelectItem(item);
       }
@@ -228,6 +228,7 @@ const Kanban = ({ initialItems, setItems, listName }) => {
                     borderRadius: '10px',
                     marginLeft: '10px',
                     padding: '10px',
+                    borderLeft: '5px solid #2196f3',
                   }}
                 >
                   {item.msg}
@@ -238,7 +239,7 @@ const Kanban = ({ initialItems, setItems, listName }) => {
                   display: { xs: "none", md: "block" },
                 }}
               >
-                <ItemAccordion item={item} > <BoxEditavel options={listName} /></ItemAccordion>
+                <ItemAccordion item={item} > <BoxEditavel item={item}  options={listName} /></ItemAccordion>
               </Box>
             </div>
           ))}
@@ -251,7 +252,7 @@ const Kanban = ({ initialItems, setItems, listName }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <BoxEditavel handleClose={handleClose} />
+            <BoxEditavel handleClose={handleClose} item={selectItem} />
         </Box>
       </Modal>
     </Container>

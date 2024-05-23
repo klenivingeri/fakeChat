@@ -20,7 +20,7 @@ export default function SelectMobile(props) {
       <Select
         labelId="demo-select-small-label"
         id="demo-select-small"
-        label="Age"
+        label="Selecione uma lista..."
         onChange={handleChange}
       >
         {listName.map((list, i) => <MenuItem key={i} value={list}>{list.name}</MenuItem>)}

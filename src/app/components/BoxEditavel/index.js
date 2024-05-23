@@ -11,10 +11,10 @@ import { useState } from "react";
 import { Checkbox, FormControlLabel } from "@mui/material";
 
 const BasicSelect = (props) => {
-  const { updateOptions , label, width, options } = props
+  const { updateOptions, label, width, options } = props;
 
   const handleChange = (event) => {
-    updateOptions(event.target.value)
+    updateOptions(event.target.value);
   };
 
   return (
@@ -27,138 +27,170 @@ const BasicSelect = (props) => {
         label={label}
         onChange={handleChange}
       >
-        {options?.map((op, i) => <MenuItem key={i} value={op.id}>{op.name}</MenuItem>)}
-        
+        {options?.map((op, i) => (
+          <MenuItem key={i} value={op.id}>
+            {op.name}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
 };
 
 const BoxEditavel = (props) => {
-  const { handleClose, createOrSave, listName } = props;
-  const [ optionType, setOptionType ] = useState('')
-  const [ optionList, setOptionList ] = useState('')
-  const [ options , setOptions] = useState([])
-  const [ option , setOption] = useState({})
-
+  const { handleClose, createOrSave, listName, item } = props;
+  const [optionType, setOptionType] = useState("");
+  const [optionList, setOptionList] = useState("");
+  const [options, setOptions] = useState([]);
+  const [input, setInput] = useState({});
 
   const saveOptions = () => {
     const op = {
-      option: option.name,
-    }
-    if(optionType == 'href'){
-      op.href = option.href
+      option: input.name,
+    };
+    if (optionType == "href") {
+      op.href = input.href;
     } else {
-      op.list = optionList
+      op.list = optionList;
     }
 
-    setOptions([
-      ...options, op
-    ])
-
-  }
+    setOptions([...options, op]);
+  };
   const handleSetOptions = (e) => {
-    setOption({
-      ...option,
-      [e.target.name]: e.target.value
+    let objOption = {}
+    if(e.target.name == 'action'){
+      objOption = {[e.target.name]: !!e.target.checked}
+    }else {
+      objOption = {[e.target.name]: e.target.value}
+    }
+    setInput({
+      ...input,
+      ...objOption,
     });
-  }
-  
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const formDataObject = {};
-
-    formData.forEach((value, key) => {
-      formDataObject[key] = value;
-    });
-    const {msg, action} = formDataObject
-
-    const _options = options.length ? { options: options} : {}
+    const _options = options.length ? { options: options } : {};
     const obj = {
-      msg,
-      action: !!action,
       id: 1,
-      ..._options
-    }
-    console.log(obj)
-    createOrSave(obj)
-    
-  }
+      msg: input.msg,
+      action: input.action,
+      ..._options,
+    };
+
+    createOrSave(obj);
+  };
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: '10px'
+        gap: "10px",
       }}
     >
-      <form onSubmit={handleSubmit}>
-      <TextField
-        sx={{ width: "100%" }}
-        size="small"
-        id="outlined-basic"
-        name='msg'
-        label="Clique aqui para atualizar a frase..."
-        variant="outlined"
-      />
-      <ItemAccordion item={{ msg: "Opções" }}>
-        <Box sx={{ display: "flex", gap: '10px' }}>
-          <TextField
-            sx={{ width: "70%"}}
-            size="small"
-            id="outlined-basic"
-            label="Clique aqui para adicionar uma opção"
-            name="name"
-            onChange={handleSetOptions}
-            variant="outlined"
-          />
-          <BasicSelect label="Tipo" options={[{name: 'Lista', id:'lista'}, {name: 'Link', id:'href'}]} width={30} updateOptions={setOptionType} />
-        </Box>
-        <Box sx={{ display: "flex", gap: '10px', justifyContent: 'end', flex:1}}>
-          {optionType == 'href' && (<TextField
-            sx={{ width: "70%" }}
-            size="small"
-            id="outlined-basic"
-            label="Adicione o link"
-            variant="outlined"
-            name="href"
-            onChange={handleSetOptions}
-          />)} 
-          {optionType == 'lista' && (<BasicSelect options={listName} label="Lista" width={70} updateOptions={setOptionList} />)}
-          <Button sx={{ width: '30%' }}  size="small" variant="contained" onClick={saveOptions}>
-          Add
-        </Button>
-        </Box>
-        
-      </ItemAccordion>
-
-      <FormControlLabel control={<Checkbox defaultChecked name="action"/>} label="É necessario interação do usuario para continuar" />
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          flex: "1",
-          justifyContent: "end",
-          mt: "10px",
-        }}
-      >
-        <Button
-          sx={{ marginLeft: "10px" }}
+        <TextField
+          sx={{ width: "100%" }}
           size="small"
-          variant="contained"
-          color="error"
-          onClick={handleClose}
+          id="outlined-basic"
+          name="msg"
+          label="Clique aqui para atualizar a frase..."
+          variant="outlined"
+          onChange={handleSetOptions}
+
+        />
+        <ItemAccordion item={{ msg: "Opções" }}>
+          {item?.options && <Box>{item.options.map(op => <div>{op.option}</div>)}</Box>}
+          <Box sx={{ display: "flex", gap: "10px" }}>
+            <TextField
+              sx={{ width: "70%" }}
+              size="small"
+              id="outlined-basic"
+              label="Clique aqui para adicionar uma opção"
+              name="name"
+              onChange={handleSetOptions}
+              variant="outlined"
+            />
+            <BasicSelect
+              label="Tipo"
+              options={[
+                { name: "Lista", id: "lista" },
+                { name: "Link", id: "href" },
+              ]}
+              width={30}
+              updateOptions={setOptionType}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "end",
+              flex: 1,
+            }}
+          >
+            {optionType == "href" && (
+              <TextField
+                sx={{ width: "70%" }}
+                size="small"
+                id="outlined-basic"
+                label="Adicione o link"
+                variant="outlined"
+                name="href"
+                onChange={handleSetOptions}
+              />
+            )}
+            {optionType == "lista" && (
+              <BasicSelect
+                options={listName}
+                label="Lista"
+                width={70}
+                updateOptions={setOptionList}
+              />
+            )}
+            <Button
+              sx={{ width: "30%" }}
+              size="small"
+              variant="contained"
+              onClick={saveOptions}
+            >
+              Add
+            </Button>
+          </Box>
+        </ItemAccordion>
+
+        <FormControlLabel
+          onChange={handleSetOptions}
+          control={<Checkbox defaultChecked name="action"/>}
+          label="É necessario interação do usuario para continuar"
+        />
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flex: "1",
+            justifyContent: "end",
+            mt: "10px",
+          }}
         >
-          Caneclar
-        </Button>
-        <Button sx={{ marginLeft: "10px" }} size="small" variant="contained" type="submit" >
-          Salvar
-        </Button>
-      </Box>
-      </form>
+          <Button
+            sx={{ marginLeft: "10px" }}
+            size="small"
+            variant="contained"
+            color="error"
+            onClick={handleClose}
+          >
+            Caneclar
+          </Button>
+          <Button
+            sx={{ marginLeft: "10px" }}
+            size="small"
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            Salvar
+          </Button>
+        </Box>
     </Box>
   );
 };
